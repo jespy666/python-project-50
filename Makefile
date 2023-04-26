@@ -9,3 +9,6 @@ publish:
 
 install:
 	python3 -m pip install .
+
+rec:
+	asciinema rec
