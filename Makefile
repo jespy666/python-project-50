@@ -12,3 +12,6 @@ install:
 
 rec:
 	asciinema rec
+
+lint:
+	poetry run flake8 gendiff
