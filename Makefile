@@ -1,5 +1,14 @@
-gendiff:
-	poetry run gendiff -h
+install:
+	poetry install
+
+test:
+	poetry run pytest
+
+test-coverage:
+	poetry run pytest --cov=gendiff --cov-report xml
+
+lint:
+	poetry run flake8 gendiff
 
 build:
 	poetry build
@@ -7,11 +16,8 @@ build:
 publish:
 	poetry publish --dry-run
 
-install:
-	python3 -m pip install .
-
 rec:
 	asciinema rec
 
-lint:
-	poetry run flake8 gendiff
+package-install:
+	python3 -m pip install .
