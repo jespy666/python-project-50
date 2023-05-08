@@ -15,7 +15,7 @@ def get_result(file_name: str) -> str:
     Reads content and return it to str format
     """
     with open(file_name) as result:
-        return result.read()
+        return result.read().strip()
 
 
 @pytest.mark.parametrize('file1, file2, output', [
