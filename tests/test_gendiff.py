@@ -10,23 +10,47 @@ def get_fixture_path(file_name: str) -> str:
     return f'{FIXTURES_PATH}{file_name}'
 
 
-def get_result(file_name: str) -> str:
+def get_result(file_path: str) -> str:
     """
     Reads content and return it to str format
     """
-    with open(file_name) as result:
+    with open(file_path) as result:
         return result.read().strip()
 
 
-@pytest.mark.parametrize('file1, file2, output', [
-    ('file1.json', 'file2.json', 'flat_expected.txt'),
-    ('file1.yaml', 'file2.yaml', 'flat_expected.txt'),
-    ('nested_file1.json', 'nested_file2.json', 'nested.txt'),
-    ('nested_file1.yaml', 'nested_file2.yaml', 'nested.txt')
+file1_json = get_fixture_path('file1.json')
+file2_json = get_fixture_path('file2.json')
+file1_yaml = get_fixture_path('file1.yaml')
+file2_yaml = get_fixture_path('file2.yaml')
+nested_file1_json = get_fixture_path('nested_file1.json')
+nested_file2_json = get_fixture_path('nested_file2.json')
+nested_file1_yaml = get_fixture_path('nested_file1.yaml')
+nested_file2_yaml = get_fixture_path('nested_file2.yaml')
+stylish_result = get_fixture_path('flat_stylish.txt')
+stylish_nested_result = get_fixture_path('nested.txt')
+plain_result = get_fixture_path('flat_plain.txt')
+plain_nested_result = get_fixture_path('plain.txt')
+
+
+@pytest.mark.parametrize('file1, file2, stylish_output', [
+    (file1_json, file2_json, stylish_result),
+    (file1_yaml, file2_yaml, stylish_result),
+    (nested_file1_json, nested_file2_json, stylish_nested_result),
+    (nested_file1_yaml, nested_file2_yaml, stylish_nested_result),
 ])
-def test_generate_diff(file1, file2, output):
-    file1_path = get_fixture_path(file1)
-    file2_path = get_fixture_path(file2)
-    expected_path = get_fixture_path(output)
-    assert generate_diff(file1_path, file2_path) ==\
-           get_result(expected_path)
+def test_stylish(file1, file2, stylish_output):
+    format_name = 'stylish'
+    assert generate_diff(file1, file2, format_name) ==\
+           get_result(stylish_output)
+
+
+@pytest.mark.parametrize('file1, file2, plain_output', [
+    (file1_json, file2_json, plain_result),
+    (file1_yaml, file2_yaml, plain_result),
+    (nested_file1_json, nested_file2_json, plain_nested_result),
+    (nested_file1_yaml, nested_file2_yaml, plain_nested_result),
+])
+def test_plain(file1, file2, plain_output):
+    format_name = 'plain'
+    assert generate_diff(file1, file2, format_name) ==\
+           get_result(plain_output)
