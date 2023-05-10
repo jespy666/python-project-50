@@ -1,11 +1,14 @@
 from gendiff.parser import parse_data
 from gendiff.diff_builder import build_diff
 from gendiff.formaters.stylish import make_stylish
+from gendiff.formaters.plain import make_plain
 
 
 def get_formater(format_name):
-    formater = make_stylish
-    return formater
+    formatter = make_stylish
+    if format_name == 'plain':
+        formatter = make_plain
+    return formatter
 
 
 def generate_diff(file_path1: str, file_path2: str,
