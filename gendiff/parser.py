@@ -12,8 +12,6 @@ def get_files_format(file1_path: str, file2_path: str) -> str:
     file2_extension = file2_name.split('.')[-1]
     if file1_extension == file2_extension:
         return file1_extension
-    else:
-        raise Exception('File formats do not match!')
 
 
 def get_files_data(file1_path: str, file2_path: str) -> tuple:
