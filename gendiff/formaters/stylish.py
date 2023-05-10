@@ -10,7 +10,7 @@ ACTIONS = {
            }
 
 
-def to_str(item) -> str:
+def to_stylish_str(item) -> str:
     """
     Convert data to str format.
     """
@@ -27,12 +27,12 @@ def make_stylish(tree: dict) -> str:  # noqa C901
     """
     def walk(node, depth):
         if not isinstance(node, dict):
-            return to_str(node)
+            return to_stylish_str(node)
         result = OPEN_BRACER
         for key, value in node.items():
             if not isinstance(value, dict):
                 result += f'{INDENT * depth}{INDENT}{key}:' \
-                          f' {to_str(value)}\n'
+                          f' {to_stylish_str(value)}\n'
             elif value.get('action') == 'nested':
                 result += f'{INDENT * depth}{INDENT}{key}:' \
                           f' {walk(value.get("children"), depth + 1)}\n'
