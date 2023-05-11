@@ -3,11 +3,9 @@ ADD = '  + '
 REMOVE = '  - '
 OPEN_BRACER = '{\n'
 CLOSE_BRACER = '}\n'
-ACTIONS = {
-           'added': ADD,
+ACTIONS = {'added': ADD,
            'removed': REMOVE,
-           'unstaged': INDENT,
-           }
+           'unstaged': INDENT, }
 
 
 def to_stylish_str(item) -> str:
