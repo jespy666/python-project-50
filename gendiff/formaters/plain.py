@@ -8,8 +8,9 @@ def to_plain_str(item) -> str:
         return 'null'
     if isinstance(item, bool):
         return str(item).lower()
-    else:
+    elif isinstance(item, str):
         return f"'{item}'"
+    return item
 
 
 def make_plain(tree: dict) -> str:
