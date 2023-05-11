@@ -12,7 +12,7 @@ def get_fixture_path(file_name: str) -> str:
 
 def get_result(file_path: str) -> str:
     """
-    Reads content and return it to str format
+    Reads content and return it to str format.
     """
     with open(file_path) as result:
         return result.read().strip()
@@ -30,6 +30,8 @@ stylish_result = get_fixture_path('flat_stylish.txt')
 stylish_nested_result = get_fixture_path('nested.txt')
 plain_result = get_fixture_path('flat_plain.txt')
 plain_nested_result = get_fixture_path('plain.txt')
+json_result = get_fixture_path('flat_json.json')
+json_nested_result = get_fixture_path('nested_json.json')
 
 
 @pytest.mark.parametrize('file1, file2, stylish_output', [
@@ -54,3 +56,15 @@ def test_plain(file1, file2, plain_output):
     format_name = 'plain'
     assert generate_diff(file1, file2, format_name) ==\
            get_result(plain_output)
+
+
+@pytest.mark.parametrize('file1, file2, json_view', [
+    (file1_json, file2_json, json_result),
+    (file1_yaml, file2_yaml, json_result),
+    (nested_file1_json, nested_file2_json, json_nested_result),
+    (nested_file1_yaml, nested_file2_yaml, json_nested_result),
+])
+def test_json_view(file1, file2, json_view):
+    format_name = 'json'
+    assert generate_diff(file1, file2, format_name) ==\
+           get_result(json_view)
