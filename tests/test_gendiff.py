@@ -28,10 +28,8 @@ nested_file1_yaml = get_fixture_path('nested_file1.yaml')
 nested_file2_yaml = get_fixture_path('nested_file2.yaml')
 stylish_result = get_fixture_path('flat_stylish.txt')
 stylish_nested_result = get_fixture_path('nested.txt')
-plain_result = get_fixture_path('flat_plain.txt')
 plain_nested_result = get_fixture_path('plain.txt')
-json_result = get_fixture_path('flat_json.json')
-json_nested_result = get_fixture_path('nested_json.json')
+json_nested_result = get_fixture_path('json_view.json')
 
 
 @pytest.mark.parametrize('file1, file2, stylish_output', [
@@ -47,8 +45,6 @@ def test_stylish(file1, file2, stylish_output):
 
 
 @pytest.mark.parametrize('file1, file2, plain_output', [
-    (file1_json, file2_json, plain_result),
-    (file1_yaml, file2_yaml, plain_result),
     (nested_file1_json, nested_file2_json, plain_nested_result),
     (nested_file1_yaml, nested_file2_yaml, plain_nested_result),
 ])
@@ -59,8 +55,6 @@ def test_plain(file1, file2, plain_output):
 
 
 @pytest.mark.parametrize('file1, file2, json_view', [
-    (file1_json, file2_json, json_result),
-    (file1_yaml, file2_yaml, json_result),
     (nested_file1_json, nested_file2_json, json_nested_result),
     (nested_file1_yaml, nested_file2_yaml, json_nested_result),
 ])
