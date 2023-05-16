@@ -1,4 +1,5 @@
-from gendiff.parser import parse_data
+from gendiff.parse_data import parse
+from gendiff.data_handler import get_extension, get_data
 from gendiff.diff_builder import build_diff
 from gendiff.formaters.stylish import make_stylish
 from gendiff.formaters.plain import make_plain
@@ -23,7 +24,10 @@ def generate_diff(file_path1: str, file_path2: str,
     """
     Function generate diff between two files in default format - 'stylish'.
     """
-    data1, data2 = parse_data(file_path1, file_path2)
-    diff = build_diff(data1, data2)
+    extension1 = get_extension(file_path1)
+    extension2 = get_extension(file_path2)
+    data1 = get_data(file_path1)
+    data2 = get_data(file_path2)
+    diff = build_diff(parse(data1, extension1), parse(data2, extension2))
     formatter = get_formater(format_name)
     return formatter(diff)
