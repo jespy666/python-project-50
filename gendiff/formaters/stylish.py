@@ -3,23 +3,22 @@ ADD = '  + '
 REMOVE = '  - '
 OPEN_BRACER = '{\n'
 CLOSE_BRACER = '}\n'
-ACTIONS = {'added': ADD,
-           'removed': REMOVE,
-           'unstaged': INDENT, }
 
 
 def to_stylish_str(item) -> str:
     """
     Convert data to str format.
     """
+    if isinstance(item, dict):
+        return str(item)
     if item is None:
         return 'null'
     if isinstance(item, bool):
         return str(item).lower()
-    return str(item)
+    return item
 
 
-def make_stylish(tree: dict) -> str:  # noqa C901
+def make_stylish(tree: dict) -> str:
     """
     Function takes a tree(dict) and return str view in 'stylish' format.
     """
@@ -29,23 +28,33 @@ def make_stylish(tree: dict) -> str:  # noqa C901
         result = OPEN_BRACER
         for key, value in node.items():
             if not isinstance(value, dict):
-                result += f'{INDENT * depth}{INDENT}{key}:' \
-                          f' {to_stylish_str(value)}\n'
-            elif value.get('action') == 'nested':
-                result += f'{INDENT * depth}{INDENT}{key}:' \
-                          f' {walk(value.get("children"), depth + 1)}\n'
-            elif value.get('action') == 'update':
-                result += f'{INDENT * depth}{REMOVE}{key}:' \
-                          f' {walk(value.get("old_value"), depth + 1)}\n'
-                result += f'{INDENT * depth}{ADD}{key}:' \
-                          f' {walk(value.get("value"), depth + 1)}\n'
-            elif value.get('action') in ACTIONS:
-                result += f'{INDENT * depth}{ACTIONS[value.get("action")]}' \
-                          f'{key}:' \
-                          f' {walk(value.get("value"), depth + 1)}\n'
+                result += f'{INDENT * depth}{INDENT}{key}: ' \
+                          f'{to_stylish_str(value)}\n'
             else:
-                result += f'{INDENT * depth}{INDENT}{key}:' \
-                          f' {walk(value, depth + 1)}\n'
+                if 'action' not in value:
+                    result += f'{INDENT * depth}{INDENT}{key}: ' \
+                              f'{walk(value, depth + 1)}\n'
+                else:
+                    action = value.get('action')
+                    children = value.get('children')
+                    new_value = value.get('value')
+                    old_value = value.get('old_value')
+                    actions = {
+                        'nested': f'{INDENT * depth}{INDENT}{key}:'
+                                  f' {walk(children, depth+1)}\n',
+                        'update': f'{INDENT * depth}{REMOVE}{key}:'
+                                  f' {walk(old_value, depth+1)}\n'
+                                  f'{INDENT * depth}{ADD}{key}:'
+                                  f' {walk(new_value, depth+1)}\n',
+                        'added': f'{INDENT * depth}{ADD}{key}: '
+                                 f'{walk(new_value, depth+1)}\n',
+                        'removed': f'{INDENT * depth}{REMOVE}{key}:'
+                                   f' {walk(new_value, depth+1)}\n',
+                        'unstaged': f'{INDENT * depth}{INDENT}{key}:'
+                                    f' {walk(new_value, depth+1)}\n'
+                    }
+                    result += actions[action]
         result += f'{INDENT * depth}{CLOSE_BRACER}'
         return result.strip()
+
     return walk(tree, 0)
