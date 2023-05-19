@@ -1,20 +1,30 @@
 INDENT = '    '
 ADD = '  + '
 REMOVE = '  - '
-OPEN_BRACER = '{\n'
-CLOSE_BRACER = '}\n'
+OPEN_BRACKET = '{\n'
+CLOSE_BRACKET = '}\n'
 
 
-def to_stylish_str(item) -> str:
+def to_str(item, depth: int) -> str:
     """
-    Convert data to str format.
+    Tree item handler for stylish formatter
     """
     if isinstance(item, dict):
-        return str(item)
-    if item is None:
-        return 'null'
+        result = OPEN_BRACKET
+        for key, value in item.items():
+            if isinstance(value, dict):
+                upd_value = to_str(value, depth+1)
+                result += f'{INDENT * depth}{INDENT}{key}:' \
+                          f' {upd_value}\n'
+            else:
+                result += f'{INDENT * depth}{INDENT}{key}:' \
+                          f' {value}\n'
+        result += f'{INDENT * depth}{CLOSE_BRACKET}'
+        return result.strip()
     if isinstance(item, bool):
         return str(item).lower()
+    if item is None:
+        return 'null'
     return item
 
 
@@ -23,38 +33,35 @@ def make_stylish(tree: dict) -> str:
     Function takes a tree(dict) and return str view in 'stylish' format.
     """
     def walk(node, depth):
-        if not isinstance(node, dict):
-            return to_stylish_str(node)
-        result = OPEN_BRACER
+        result = OPEN_BRACKET
         for key, value in node.items():
-            if not isinstance(value, dict):
-                result += f'{INDENT * depth}{INDENT}{key}: ' \
-                          f'{to_stylish_str(value)}\n'
+            action = value.get('action')
+            cur_depth = depth + 1
+            if action == 'nested':
+                children = value.get('children')
+                result += f'{INDENT * cur_depth}{key}:' \
+                          f' {walk(children, cur_depth)}\n'
             else:
-                if 'action' not in value:
-                    result += f'{INDENT * depth}{INDENT}{key}: ' \
-                              f'{walk(value, depth + 1)}\n'
-                else:
-                    action = value.get('action')
-                    children = value.get('children')
-                    new_value = value.get('value')
-                    old_value = value.get('old_value')
-                    actions = {
-                        'nested': f'{INDENT * depth}{INDENT}{key}:'
-                                  f' {walk(children, depth+1)}\n',
-                        'update': f'{INDENT * depth}{REMOVE}{key}:'
-                                  f' {walk(old_value, depth+1)}\n'
-                                  f'{INDENT * depth}{ADD}{key}:'
-                                  f' {walk(new_value, depth+1)}\n',
-                        'added': f'{INDENT * depth}{ADD}{key}: '
-                                 f'{walk(new_value, depth+1)}\n',
-                        'removed': f'{INDENT * depth}{REMOVE}{key}:'
-                                   f' {walk(new_value, depth+1)}\n',
-                        'unstaged': f'{INDENT * depth}{INDENT}{key}:'
-                                    f' {walk(new_value, depth+1)}\n'
-                    }
-                    result += actions[action]
-        result += f'{INDENT * depth}{CLOSE_BRACER}'
+                new_value = value.get('value')
+                old_value = value.get('old_value')
+                actions = {
+                    'update': f'{INDENT * depth}'
+                              f'{REMOVE}{key}: '
+                              f'{to_str(old_value, cur_depth)}\n'
+                              f'{INDENT * depth}'
+                              f'{ADD}{key}: '
+                              f'{to_str(new_value, cur_depth)}\n',
+                    'added': f'{INDENT * depth}'
+                             f'{ADD}{key}: '
+                             f'{to_str(new_value, cur_depth)}\n',
+                    'removed': f'{INDENT * depth}'
+                               f'{REMOVE}{key}: '
+                               f'{to_str(new_value, cur_depth)}\n',
+                    'unstaged': f'{INDENT * depth}'
+                                f'{INDENT}{key}: '
+                                f'{to_str(new_value, cur_depth)}\n'
+                }
+                result += actions[action]
+        result += f'{INDENT * depth}{CLOSE_BRACKET}'
         return result.strip()
-
     return walk(tree, 0)
