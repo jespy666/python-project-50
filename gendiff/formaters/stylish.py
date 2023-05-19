@@ -13,7 +13,7 @@ def to_str(item, depth: int) -> str:
         result = OPEN_BRACKET
         for key, value in item.items():
             if isinstance(value, dict):
-                upd_value = to_str(value, depth+1)
+                upd_value = to_str(value, depth + 1)
                 result += f'{INDENT * depth}{INDENT}{key}:' \
                           f' {upd_value}\n'
             else:
